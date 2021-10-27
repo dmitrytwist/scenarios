@@ -1,0 +1,28 @@
+#!/bin/sh
+name=`basename $0`
+dir="/tmp"
+cmd="python3 -m http.server 8081"
+
+start() {
+ echo "Starting $name"
+ cd $dir
+ sudo -u www-data $cmd &
+}
+stop() {
+ echo "Stopping $name"
+ sudo kill -15 $(cat /var/run/$name.pid)
+}
+status() {
+ if (( $(ps -ef | grep -v grep | grep $name | wc -l) > 0 )); then
+     echo "$name is running!!!"
+ else
+     echo "$name is down!!!"
+ fi
+}
+case $1 in
+  start|stop|status) $1;;
+  restart) stop; start;;
+  *) echo "Usage : $0 <start|stop|restart>"; exit 1;;
+esac
+
+exit 0
