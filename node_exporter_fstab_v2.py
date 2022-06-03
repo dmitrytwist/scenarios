@@ -23,13 +23,13 @@ with open(metric_file) as m:
         if not l.startswith('#') and l != '\n':
             l_n = re.sub(r'[ ]+', ' ', l).split(' ')
             if ''.join(l_n[0:1]).startswith(metric_name):
-                for _ in except_metric:
-                    if not ''.join(l_n[0:1]).startswith(_):
-                        lll = ','.join(
-                            ''.join(l_n[0:1]).replace('"', '').replace(
-                                'node_filesystem_avail_bytes{', '').replace('}', '').split('=')).split(',')
-                        metric_list.append(lll)
-                        lll = ''
+                if any([x in ''.join(l_n[0:1]) for x in except_metric]):
+                    pass
+                else:
+                    lll = ','.join(
+                        ''.join(l_n[0:1]).replace('"', '').replace(
+                            'node_filesystem_avail_bytes{', '').replace('}', '').split('=')).split(',')
+                    metric_list.append(lll)
 
 bc_shares_match = set()
 bc_shares_exception = set()
