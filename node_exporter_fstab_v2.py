@@ -4,25 +4,23 @@ import time
 
 fstab_file = 'fstab.txt'
 metric_file = 'metrics.txt'
-except_fstab = (
-    ('/dev/sr',),
-    ('/boot', '/media/cdrom',),
-    ('sw', 'udf,iso9660',)
-)
-except_metric = ('tmpfs', 'gvfsd-fuse', 'lxcfs', '/boot', '/dev/sr0', 'udf,iso9660')
+
+except_fstab = ('/dev/sr',
+                '/boot', '/media/cdrom', 'sw', 'udf,iso9660',
+                )
+
+except_metric = ('tmpfs', 'gvfsd-fuse', 'lxcfs', '/boot', '/dev/sr0', 'udf,iso9660',)
 metric_name = 'node_filesystem_avail_bytes'
 
 fstab_list = []
 metric_list = []
 with open(fstab_file, encoding='cp1251') as f:
     for n, s in enumerate(f.readlines(), 1):
-        if not s.startswith('#') and s != '\n':
+        if not s.startswith('#') and s != '\n' \
+                and not any([s.__contains__(str(x)) for x in
+                             except_fstab]):
             s_n = re.sub(r'[\s]+', ' ', s).split(' ')
-            for _ in range(3):
-                if any([''.join(s_n[_:_+1]).startswith(x) for x in except_fstab[_]]):
-                    pass
-            else:
-                fstab_list.append(s_n)
+            fstab_list.append(s_n)
                 
 with open(metric_file) as m:
     for i, l in enumerate(m.readlines(), 1):
